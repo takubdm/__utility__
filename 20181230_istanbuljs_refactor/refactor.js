@@ -5,7 +5,7 @@ const fse = require('fs-extra');
 const cheerio = require('cheerio');
 const rimraf = require("rimraf");
 const readline = require("readline");
-const coverageDir = path.resolve(__dirname, "../coverage");
+const coverageDir = path.resolve(__dirname, "../../coverage");
 const dirToCompare = path.resolve(__dirname, "coverage");
 const htmlReportDirPath = "./lcov-report";
 const jsonReportFilePath = "./coverage-final.json";
@@ -44,8 +44,11 @@ const askUpdate = function(coverageDir, dirToCompare) {
 
 const checkHTML = function() {
   const extractor = {
-    getCode: function($) {
+    getTable: function($) {
       return $("table.coverage");
+    },
+    getCode: function($) {
+      return $(".prettyprint");
     },
     removeFooter: function($) {
       const footer = $("body div[class='footer quiet pad2 space-top1 center small']");
@@ -63,7 +66,7 @@ const checkHTML = function() {
       const relativePath = path.relative(coverageDir, htmlFile);
       const fileToCompare = path.resolve(dirToCompare, relativePath);
       if (fs.existsSync(fileToCompare)) {
-        if (getHTML(htmlFile, extractor.removeFooter) !== getHTML(fileToCompare, extractor.removeFooter)) {
+        if (getHTML(htmlFile, extractor.getCode) !== getHTML(fileToCompare, extractor.getCode)) {
           result["Differed"] = htmlFile;
         }
       } else {
