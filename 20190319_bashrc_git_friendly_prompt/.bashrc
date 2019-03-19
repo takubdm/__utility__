@@ -8,21 +8,28 @@ is_in_git_project() {
 get_color() {
     local color="$1"
     case "${color}" in
-        "BLUE") echo "\[\e[1;34m\]";;
-        "RED") echo "\[\e[1;31m\]";;
-        "GREEN") echo "\[\e[1;32m\]";;
-        "GRAY") echo "\[\e[1;37m\]";;
-        "WHITE") echo "\[\e[00m\]";;
-        *) echo "\[\e[00m\]";;
+        "BLUE") echo $'\e[1;34m';;
+        "RED") echo $'\e[1;31m';;
+        "GREEN") echo $'\e[1;32m';;
+        "GRAY") echo $'\e[1;37m';;
+        "WHITE") echo $'\e[1;00m';;
+        *) echo $'\e[00m';;
     esac
 }
 reset_color() {
     echo $(get_color)
 }
+switch_color() {
+    local MASTER="[master]"
+    case "$(branch_name)" in
+        "${MASTER}") echo $(get_color "RED");;
+        *) echo $(get_color "GREEN");;
+    esac
+}
 git_branch() {
     local SWITCH_COLOR=$(get_color "GREEN")
     local RESET_COLOR=$(reset_color)
-    echo "${SWITCH_COLOR}\$(git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/[\1]/')${RESET_COLOR}"
+    echo "\$(switch_color)\$(branch_name)${RESET_COLOR}"
 }
 branch_name() {
     git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/[\1]/'
@@ -42,4 +49,3 @@ promps() {
     fi
 }
 promps
-
