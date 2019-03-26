@@ -8,12 +8,12 @@ is_in_git_project() {
 get_color() {
     local color="$1"
     case "${color}" in
-        "BLUE") echo $'\e[1;34m';;
-        "RED") echo $'\e[1;31m';;
-        "GREEN") echo $'\e[1;32m';;
-        "GRAY") echo $'\e[1;37m';;
-        "WHITE") echo $'\e[1;00m';;
-        *) echo $'\e[00m';;
+        "BLUE") echo $'\001\e[1;34m\002';;
+        "RED") echo $'\001\e[1;31m\002';;
+        "GREEN") echo $'\001\e[1;32m\002';;
+        "GRAY") echo $'\001\e[1;37m\002';;
+        "WHITE") echo $'\001\e[1;00m\002';;
+        *) echo $'\001\e[00m\002';;
     esac
 }
 reset_color() {
@@ -27,9 +27,7 @@ switch_color() {
     esac
 }
 git_branch() {
-    local SWITCH_COLOR=$(get_color "GREEN")
-    local RESET_COLOR=$(reset_color)
-    echo "\$(switch_color)\$(branch_name)${RESET_COLOR}"
+    echo "\$(switch_color)\$(branch_name)\$(reset_color)"
 }
 branch_name() {
     git branch --no-color 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/[\1]/'
@@ -38,7 +36,7 @@ promps() {
     local DEFAULT_PROMPT="\u@\h:\W\$ "
 
     case $TERM in
-        xterm*) TITLEBAR='\[\e]0;\W\007\]';;
+        xterm*) TITLEBAR='\001\e]0;\W\007\002';;
         *)      TITLEBAR="";;
     esac
 
